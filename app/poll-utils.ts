@@ -84,7 +84,7 @@ export async function generatePollText(options: GenerationOptions, agent: AtpAge
 
 async function buildTemplate(template: Template[], agent: AtpAgent): Promise<PollPost> {
     const links: AppBskyRichtextFacet.Main[] = [];
-    const pollFacets: AppBskyRichtextFacet.Main[] = [];
+    let pollFacets: AppBskyRichtextFacet.Main[] = [];
     let questionIndex = 1;
     for (let i = 0, len = 0; i < template.length; len += byteLength(template[i].text), i++) {
         if (template[i].link) {
@@ -110,7 +110,7 @@ async function buildTemplate(template: Template[], agent: AtpAgent): Promise<Pol
 
     const rt = new RichText({ text });
     await rt.detectFacets(agent);
-    pollFacets.concat(rt.facets || []);
+    pollFacets = pollFacets.concat(rt.facets || []);
 
     return { text, links, pollFacets };
 }

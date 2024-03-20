@@ -37,19 +37,6 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     const enumeration = "number";
     const visibleId = generateId(6);
     const results = answers.map(() => 0).concat([0]);
-    let pollPost;
-    try {
-        pollPost = generatePollText({
-            visibleId,
-            poll: { question, answers, enumeration },
-            author: handle,
-            pollStyle: 'plain'
-        });
-    } catch {
-        return new Response(JSON.stringify({
-            "error": "poll too long",
-        }), { status: 400, headers: { "Content-Type": "application/json" } });
-    }
     const createdAt = (new Date()).toISOString();
     const agent = new Agent({ service: getConfig('BSKY_HOST') });
     try {
@@ -62,6 +49,19 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         return new Response(JSON.stringify({
             "error": "invalid bsky credentials",
         }), { status: 400 });
+    }
+    let pollPost;
+    try {
+        pollPost = await generatePollText({
+            visibleId,
+            poll: { question, answers, enumeration },
+            author: handle,
+            pollStyle: 'plain'
+        }, agent);
+    } catch {
+        return new Response(JSON.stringify({
+            "error": "poll too long",
+        }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
     let postUri = null;
     let createdPost: { uri: string, cid: string } | undefined;

@@ -1,4 +1,4 @@
-import { AtpAgent, AppBskyFeedPost, AppBskyRichtextFacet, RichText } from "https://esm.sh/v115/@atproto/api@0.2.3"
+import { AtpAgent, AppBskyFeedPost, AppBskyRichtextFacet, RichText } from "https://esm.sh/v115/@atproto/api@0.12.2"
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 

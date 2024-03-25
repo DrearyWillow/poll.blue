@@ -1,4 +1,4 @@
-import { AtpAgent, AppBskyFeedPost, AppBskyRichtextFacet, RichText } from "https://esm.sh/v115/@atproto/api@0.12.2"
+import { AppBskyFeedPost, AppBskyRichtextFacet } from "https://esm.sh/v115/@atproto/api@0.2.3"
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -21,7 +21,6 @@ export type Poll = {
 interface Template {
     text: string;
     link?: string;
-    mention?: boolean;
     pollFacet?: string;
     truncate: 'yes' | 'no';
 }
@@ -40,7 +39,7 @@ interface PollPost {
     pollFacets: AppBskyRichtextFacet.Main[];
 }
 
-export async function generatePollText(options: GenerationOptions, agent: AtpAgent): Promise<PollPost> {
+export function generatePollText(options: GenerationOptions): PollPost {
     const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
     const emojiLetters = ['🅰', '🅱', '🅲', '🅳']
     const { visibleId, poll, replyRef, author } = options;
@@ -48,33 +47,33 @@ export async function generatePollText(options: GenerationOptions, agent: AtpAge
     let postTemplate: Template[] = [];
     if (options.pollStyle === 'plain') {
         postTemplate = [
-            { text: `${poll.question}\n\n`, truncate: 'no' },
+            { text: `${poll.question}\n\n`, link: undefined, truncate: 'no' },
         ];
     } else {
         postTemplate = [
-            { text: `"${poll.question}"`, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
-            { text: ` asked by `, truncate: 'yes' },
-            { text: `@${author}`, truncate: 'yes' },
-            { text: `. Vote below!`, truncate: 'yes' },
-            { text: `\n\n`, truncate: 'no' },
+            { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
+            { text: ` asked by `, link: undefined, truncate: 'yes' },
+            { text: `@${author}`, link: `https://bsky.app/profile/${author}/post/${postId}`, truncate: 'yes' },
+            { text: `. Vote below!`, link: undefined, truncate: 'yes' },
+            { text: `\n\n`, link: undefined, truncate: 'no' },
         ];
     }
     for (const [i, _answer] of options.poll.answers.entries()) {
         const item = poll.enumeration === 'number' ? emojiNumbers[i] : emojiLetters[i];
-        postTemplate.push({ text: `${item} `, truncate: 'no' });
+        postTemplate.push({ text: `${item} `, link: undefined, truncate: 'no' });
         postTemplate.push({
             text: `${options.poll.answers[i]}`,
             link: `https://poll.blue/p/${visibleId}/${i + 1}`,
             truncate: 'no',
             pollFacet: 'blue.poll.post.facet#option'
         });
-        postTemplate.push({ text: '\n', truncate: 'no' });
+        postTemplate.push({ text: '\n', link: undefined, truncate: 'no' });
     }
     postTemplate.push({ text: `\n`, link: undefined, truncate: 'no' });
     postTemplate.push({ text: `📊 Show results`, link: `https://poll.blue/p/${visibleId}/0`, truncate: 'no' });
-    let pollPost = await buildTemplate(postTemplate, agent);
+    let pollPost = buildTemplate(postTemplate);
     if (!postLengthValid(pollPost.text)) {
-        pollPost = await buildTemplate(postTemplate.filter(t => t.truncate === 'no'), agent)
+        pollPost = buildTemplate(postTemplate.filter(t => t.truncate === 'no'))
     }
     if (!postLengthValid(pollPost.text)) {
         throw new Error(`post too long: ${pollPost.text.length} bytes`)
@@ -82,9 +81,9 @@ export async function generatePollText(options: GenerationOptions, agent: AtpAge
     return pollPost;
 }
 
-async function buildTemplate(template: Template[], agent: AtpAgent): Promise<PollPost> {
+function buildTemplate(template: Template[]): PollPost {
     const links: AppBskyRichtextFacet.Main[] = [];
-    let pollFacets: AppBskyRichtextFacet.Main[] = [];
+    const pollFacets: AppBskyRichtextFacet.Main[] = [];
     let questionIndex = 1;
     for (let i = 0, len = 0; i < template.length; len += byteLength(template[i].text), i++) {
         if (template[i].link) {
@@ -107,11 +106,6 @@ async function buildTemplate(template: Template[], agent: AtpAgent): Promise<Pol
         }
     }
     const text = template.map(t => t.text).join('');
-
-    const rt = new RichText({ text });
-    await rt.detectFacets(agent);
-    pollFacets = pollFacets.concat(rt.facets || []);
-
     return { text, links, pollFacets };
 }
 

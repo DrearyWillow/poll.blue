@@ -136,7 +136,7 @@ export default function PostPoll() {
               onInput={({ target }) => {
                 setReplyTo(target && (target as any).value);
               }}
-              placeholder="https://staging.bsky.app/profile/jay.bsky.team/post/3juflvnb3d62u"
+              placeholder="https://bsky.app/profile/jay.bsky.team/post/3juflvnb3d62u"
             />
           </div>
         </div>

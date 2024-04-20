@@ -150,7 +150,7 @@ Deno.test("posts polls", async () => {
                         }
                     },
                     facets: [
-                        { index: { byteStart: 20, byteEnd: 36 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://staging.bsky.app/profile/epistemic.horse/post/3jtjczuf2ls2s` }] },
+                        { index: { byteStart: 20, byteEnd: 36 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://bsky.app/profile/epistemic.horse/post/3jtjczuf2ls2s` }] },
                         { index: { byteStart: 56, byteEnd: 64 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/1` }] },
                         { index: { byteStart: 70, byteEnd: 78 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/2` }] },
                         { index: { byteStart: 84, byteEnd: 92 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/3` }] },
@@ -217,7 +217,7 @@ Deno.test("produces a ReplyRef from a link", async () => {
             value: {},
         },
     };
-    const replyRef1 = await bot.linkToReplyRef("https://staging.bsky.app/profile/epistemic.horse/post/3jtjczuf2ls2s");
+    const replyRef1 = await bot.linkToReplyRef("https://bsky.app/profile/epistemic.horse/post/3jtjczuf2ls2s");
     const replyRef2 = await bot.linkToReplyRef("https://bsky.app/profile/epistemic.horse/post/3jtjczuf2ls2s");
     const replyRef3 = await bot.linkToReplyRef("at://did:plc:3rpxqcxyf5aqs3s7jpd36gbm/app.bsky.feed.post/3jtjczuf2ls2s");
     assertEquals(replyRef1, expected);

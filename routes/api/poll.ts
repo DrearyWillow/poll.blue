@@ -57,7 +57,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
             poll: { question, answers, enumeration },
             author: handle,
             pollStyle: 'plain'
-        }, agent);
+        });
     } catch {
         return new Response(JSON.stringify({
             "error": "poll too long",

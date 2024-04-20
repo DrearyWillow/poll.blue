@@ -35,6 +35,11 @@ async function vote(ipString: string, poll: string, vote: string) {
   if (Number.isNaN(voteNum) || voteNum < 0 || voteNum > answers.length) {
     throw new Error("Invalid vote");
   }
+  if (voteNum == 0) {
+    // voteNum of 0 is just show results, don't log this as a vote!
+    return
+  }
+
   try {
     const trans = client.createTransaction("vote");
     await trans.begin();

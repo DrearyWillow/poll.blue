@@ -39,7 +39,8 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     const visibleId = generateId(6);
     const results = answers.map(() => 0).concat([0]);
     const createdAt = (new Date()).toISOString();
-    const agent = new Agent({ service: await getPds(handle) });
+    const service = await getPds(handle);
+    const agent = new Agent({ service: service });
     try {
         await agent.login({
             identifier: handle,

@@ -7,6 +7,7 @@ import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import { z } from "https://deno.land/x/zod@v3.16.1/mod.ts";
 import { getConfig } from "../../app/config.ts";
 import { json } from "../../app/utils.ts";
+import { getPds } from "../../app/identity_utils.ts";
 
 const postPollSchema = z.object({
     question: z.string().min(1).max(200),
@@ -38,7 +39,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     const visibleId = generateId(6);
     const results = answers.map(() => 0).concat([0]);
     const createdAt = (new Date()).toISOString();
-    const agent = new Agent({ service: getConfig('BSKY_HOST') });
+    const agent = new Agent({ service: await getPds(handle) });
     try {
         await agent.login({
             identifier: handle,

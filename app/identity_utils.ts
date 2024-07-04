@@ -1,26 +1,7 @@
 export async function getDidFromHandle(handle: string): string {
-    if (handle.startsWith("did:")) {
-        return handle;
-    }
-    const dnsname = `_atproto.${handle}`;
-    try {
-        const records = await Deno.resolveDns(dnsname, "TXT");
-        const txtRecord = records[0];
-        if (txtRecord.length !== 1) {
-            return await getDidByHttp(handle);
-        }
-        return txtRecord[0].slice(4);
-
-    }
-    catch {
-        return await getDidByHttp(handle);
-    }
-}
-
-async function getDidByHttp(handle: string): Promise<string> {
-    const path_to_fetch = `https://${handle}/.well-known/atproto-did`;
-    const response = await fetch(path_to_fetch);
-    return await response.text();
+    const response = await fetch(`https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=${handle}`);
+    const json = await response.json();
+    return json.did || throw new Error("No DID found");
 }
 
 export function getDidDocPath(did: string): string {

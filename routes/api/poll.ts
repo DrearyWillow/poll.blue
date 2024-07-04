@@ -34,12 +34,12 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
             "error": pollParse.error.format()
         }), { status: 400 });
     }
-    const { question, answers, handle, password, user_agent: userAgent, reply_to: replyTo, service: pds } = pollParse.data;
+    const { question, answers, handle, password, user_agent: userAgent, reply_to: replyTo, service } = pollParse.data;
     const enumeration = "number";
     const visibleId = generateId(6);
     const results = answers.map(() => 0).concat([0]);
     const createdAt = (new Date()).toISOString();
-    const agent = new Agent({ service: pds });
+    const agent = new Agent({ service: service || "https://bsky.social" });
     try {
         await agent.login({
             identifier: handle,

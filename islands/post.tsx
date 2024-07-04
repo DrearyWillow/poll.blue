@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import { postUriToBskyLink } from "../app/poll-utils.ts";
+import { getPds } from "../app/identity_utils.ts";
 
 export default function PostPoll() {
   const [handle, setHandle] = useState("");
@@ -12,6 +13,7 @@ export default function PostPoll() {
   const [replyTo, setReplyTo] = useState(undefined);
   async function postPoll(evt: Event) {
     evt.preventDefault();
+    const service = await getPds(handle);
     const response = await fetch("/api/poll", {
       method: "POST",
       body: JSON.stringify({
@@ -21,6 +23,7 @@ export default function PostPoll() {
         answers: options.filter((opt) => opt != ""),
         user_agent: "poll.blue",
         reply_to: replyTo,
+        service,
       }),
     });
     if (response.status === 200) {

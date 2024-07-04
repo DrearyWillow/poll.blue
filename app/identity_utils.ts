@@ -1,7 +1,7 @@
 export async function getDidFromHandle(handle: string): string {
     const response = await fetch(`https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=${handle}`);
     const json = await response.json();
-    return json.did || throw new Error("No DID found");
+    return json.did;
 }
 
 export function getDidDocPath(did: string): string {

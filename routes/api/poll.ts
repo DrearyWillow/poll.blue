@@ -112,10 +112,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         if (!createdPost) {
             break likeAndRepost;
         }
-        const replyRef = {
-            parent: { cid: createdPost.cid, uri: createdPost.uri, },
-            root: { cid: createdPost.cid, uri: createdPost.uri, }
-        };
+        const replyRef = await botClient?.linkToReplyRef(createdPost.uri); 
         await botClient?.likePost(replyRef);
         await botClient?.repost(replyRef);
     } catch (e) {

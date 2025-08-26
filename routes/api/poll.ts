@@ -34,7 +34,8 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
             "error": pollParse.error.format()
         }), { status: 400 });
     }
-    const { question, answers, handle, password, user_agent: userAgent, reply_to: replyTo, service } = pollParse.data;
+    const { question, answers, handle, password, user_agent: userAgent, reply_to: replyTo } = pollParse.data;
+    const service = await getPds(handle);
     const enumeration = "number";
     const visibleId = generateId(6);
     const results = answers.map(() => 0).concat([0]);
